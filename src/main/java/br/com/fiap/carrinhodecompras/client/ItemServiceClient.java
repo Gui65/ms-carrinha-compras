@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.util.UUID;
 
 @Repository
-@FeignClient(name = "item-service")
+//@FeignClient(name = "item-service")
 public interface ItemServiceClient {
-    @GetMapping("/itens/{id}")
-    Item obterItemPorId(@PathVariable UUID id);
+    /*@GetMapping("/itens/{id}")
+    Item obterItemPorId(@PathVariable UUID id);*/
 }

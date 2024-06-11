@@ -1,6 +1,6 @@
 package br.com.fiap.carrinhodecompras.domain.service;
 
-import br.com.fiap.carrinhodecompras.client.ItemServiceClient;
+//import br.com.fiap.carrinhodecompras.client.ItemServiceClient;
 import br.com.fiap.carrinhodecompras.domain.entity.Carrinho;
 import br.com.fiap.carrinhodecompras.domain.entity.Item;
 import br.com.fiap.carrinhodecompras.domain.entity.ItemCarrinho;
@@ -16,8 +16,8 @@ public class CarrinhoService {
     @Autowired
     private CarrinhoRepository carrinhoRepository;
 
-    @Autowired
-    private ItemServiceClient itemServiceClient;
+   /* @Autowired
+    private ItemServiceClient itemServiceClient;*/
 
     public Carrinho obterCarrinhoPorUsuarioId(UUID usuarioId) {
         return carrinhoRepository.findByUsuarioId(usuarioId);
@@ -25,7 +25,8 @@ public class CarrinhoService {
 
     public Carrinho adicionarItemAoCarrinho(UUID usuarioId, UUID itemId, int quantidade) {
         // Verificar se o item existe no serviço de itens
-        Item item = itemServiceClient.obterItemPorId(itemId);
+        //Item item = itemServiceClient.obterItemPorId(itemId);
+        Item item = null;
         if (item == null) {
             throw new RuntimeException("Item não encontrado");
         }
