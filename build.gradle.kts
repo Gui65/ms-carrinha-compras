@@ -30,6 +30,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("com.auth0:java-jwt:4.4.0")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
     compileOnly("org.projectlombok:lombok:1.18.22")
