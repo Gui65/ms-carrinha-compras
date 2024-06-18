@@ -1,5 +1,6 @@
 package br.com.fiap.carrinhodecompras.application.controller;
 
+import br.com.fiap.carrinhodecompras.application.controller.response.CarrinhoResponse;
 import br.com.fiap.carrinhodecompras.domain.entity.Carrinho;
 import br.com.fiap.carrinhodecompras.domain.service.CarrinhoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +17,13 @@ public class CarrinhoController {
     private CarrinhoService carrinhoService;
 
     @GetMapping
-    public Carrinho obterCarrinho(@AuthenticationPrincipal Jwt principal) {
+    public CarrinhoResponse obterCarrinho(@AuthenticationPrincipal Jwt principal) {
         UUID usuarioId = UUID.fromString(principal.getSubject());
         return carrinhoService.obterCarrinhoPorUsuarioId(usuarioId);
     }
 
     @PostMapping("/adicionar")
-    public Carrinho adicionarItemAoCarrinho(@AuthenticationPrincipal Jwt principal,
+    public CarrinhoResponse adicionarItemAoCarrinho(@AuthenticationPrincipal Jwt principal,
                                             @RequestParam UUID itemId,
                                             @RequestParam int quantidade) {
         UUID usuarioId = UUID.fromString(principal.getSubject());
@@ -30,7 +31,7 @@ public class CarrinhoController {
     }
 
     @PostMapping("/remover")
-    public Carrinho removerItemDoCarrinho(@AuthenticationPrincipal Jwt principal,
+    public CarrinhoResponse removerItemDoCarrinho(@AuthenticationPrincipal Jwt principal,
                                           @RequestParam UUID itemId,
                                           @RequestParam int quantidade) {
         UUID usuarioId = UUID.fromString(principal.getSubject());

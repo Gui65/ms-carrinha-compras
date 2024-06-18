@@ -1,4 +1,4 @@
-package br.com.fiap.carrinhodecompras.domain.entity;
+package br.com.fiap.carrinhodecompras.infra.client.dto;
 
 import lombok.Data;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import java.util.UUID;
 @Data
 @Getter
 @Setter
-public class Item {
+public class ItemDTO {
     private UUID id;
     private String nome;
     private String descricao;

@@ -1,8 +1,11 @@
 package br.com.fiap.carrinhodecompras.domain.service;
 
-//import br.com.fiap.carrinhodecompras.client.ItemServiceClient;
+import br.com.fiap.carrinhodecompras.application.controller.response.CarrinhoResponse;
+import br.com.fiap.carrinhodecompras.application.controller.response.ItemCarrinhoResponse;
+import br.com.fiap.carrinhodecompras.exceptions.NaoEncontradoException;
+import br.com.fiap.carrinhodecompras.infra.client.ItemServiceClient;
 import br.com.fiap.carrinhodecompras.domain.entity.Carrinho;
-import br.com.fiap.carrinhodecompras.domain.entity.Item;
+import br.com.fiap.carrinhodecompras.infra.client.dto.ItemDTO;
 import br.com.fiap.carrinhodecompras.domain.entity.ItemCarrinho;
 import br.com.fiap.carrinhodecompras.infra.repository.CarrinhoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,19 +19,21 @@ public class CarrinhoService {
     @Autowired
     private CarrinhoRepository carrinhoRepository;
 
-   /* @Autowired
-    private ItemServiceClient itemServiceClient;*/
+    @Autowired
+    private ItemServiceClient itemServiceClient;
 
-    public Carrinho obterCarrinhoPorUsuarioId(UUID usuarioId) {
-        return carrinhoRepository.findByUsuarioId(usuarioId);
+    public CarrinhoResponse obterCarrinhoPorUsuarioId(UUID usuarioId) {
+        Carrinho carrinho = carrinhoRepository.findByUsuarioId(usuarioId);
+        return toCarrinhoResponse(carrinho);
     }
 
-    public Carrinho adicionarItemAoCarrinho(UUID usuarioId, UUID itemId, int quantidade) {
+    public CarrinhoResponse adicionarItemAoCarrinho(UUID usuarioId, UUID itemId, int quantidade) {
         // Verificar se o item existe no serviço de itens
-        //Item item = itemServiceClient.obterItemPorId(itemId);
-        Item item = null;
+        ItemDTO item = itemServiceClient.obterItemPorId(itemId);
+        //Item item = null;
         if (item == null) {
-            throw new RuntimeException("Item não encontrado");
+            throw new NaoEncontradoException(
+                    String.format("Item com o id '%s' nao encontrado", itemId));
         }
 
         Carrinho carrinho = obterOuCriarCarrinho(usuarioId);
@@ -42,11 +47,11 @@ public class CarrinhoService {
             novoItem.setQuantidade(quantidade);
             carrinho.getItens().add(novoItem);
         }
-
-        return carrinhoRepository.save(carrinho);
+        Carrinho carrinhoSalvo = carrinhoRepository.save(carrinho);
+        return toCarrinhoResponse(carrinhoSalvo);
     }
 
-    public Carrinho removerItemDoCarrinho(UUID usuarioId, UUID itemId, int quantidade) {
+    public CarrinhoResponse removerItemDoCarrinho(UUID usuarioId, UUID itemId, int quantidade) {
         Carrinho carrinho = obterOuCriarCarrinho(usuarioId);
         Optional<ItemCarrinho> itemExistente = carrinho.getItens().stream().filter(itemCarrinho -> itemCarrinho.getItemId().equals(itemId)).findFirst();
 
@@ -58,7 +63,8 @@ public class CarrinhoService {
             }
         }
 
-        return carrinhoRepository.save(carrinho);
+        carrinho = carrinhoRepository.save(carrinho);
+        return toCarrinhoResponse(carrinho);
     }
 
     private Carrinho obterOuCriarCarrinho(UUID usuarioId) {
@@ -69,6 +75,19 @@ public class CarrinhoService {
             carrinhoRepository.save(carrinho);
         }
         return carrinho;
+    }
+
+    private CarrinhoResponse toCarrinhoResponse(Carrinho carrinho) {
+        return new CarrinhoResponse(
+            carrinho.getId(),
+            carrinho.getUsuarioId(),
+            carrinho.getItens().stream().map(itemCarrinho -> new ItemCarrinhoResponse(
+                itemCarrinho.getItemId(),
+                itemCarrinho.getQuantidade(),
+                itemCarrinho.getPreco(),
+                itemCarrinho.getNome()
+            )).toList()
+        );
     }
 }
 
