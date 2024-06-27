@@ -5,6 +5,6 @@ import java.util.UUID;
 
 public record CarrinhoResponse(
     UUID id,
-    UUID usuarioId,
+    String usuarioId,
     List<ItemCarrinhoResponse> itens) {
 }

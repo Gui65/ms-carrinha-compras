@@ -2,6 +2,7 @@ package br.com.fiap.carrinhodecompras.application.controller;
 
 import br.com.fiap.carrinhodecompras.application.controller.response.CarrinhoResponse;
 import br.com.fiap.carrinhodecompras.domain.entity.Carrinho;
+import br.com.fiap.carrinhodecompras.domain.security.TokenService;
 import br.com.fiap.carrinhodecompras.domain.service.CarrinhoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,25 +17,32 @@ public class CarrinhoController {
     @Autowired
     private CarrinhoService carrinhoService;
 
+    @Autowired
+    private TokenService tokenService;
+
     @GetMapping
-    public CarrinhoResponse obterCarrinho(@AuthenticationPrincipal Jwt principal) {
-        UUID usuarioId = UUID.fromString(principal.getSubject());
-        return carrinhoService.obterCarrinhoPorUsuarioId(usuarioId);
+    public CarrinhoResponse obterCarrinho(@RequestHeader("Authorization") String token) {
+        //UUID usuarioId = UUID.fromString(token.getSubject());
+        var tokenReplace = token.replace("Bearer ", "");
+        String id = tokenService.validateToken(tokenReplace);
+        return carrinhoService.obterCarrinhoPorUsuarioId(id);
     }
 
     @PostMapping("/adicionar")
-    public CarrinhoResponse adicionarItemAoCarrinho(@AuthenticationPrincipal Jwt principal,
-                                            @RequestParam UUID itemId,
+    public CarrinhoResponse adicionarItemAoCarrinho(@RequestHeader("Authorization") String token,
+                                            @RequestParam String itemId,
                                             @RequestParam int quantidade) {
-        UUID usuarioId = UUID.fromString(principal.getSubject());
-        return carrinhoService.adicionarItemAoCarrinho(usuarioId, itemId, quantidade);
+        var tokenReplace = token.replace("Bearer ", "");
+        String id = tokenService.validateToken(tokenReplace);
+        return carrinhoService.adicionarItemAoCarrinho(id, itemId, quantidade);
     }
 
     @PostMapping("/remover")
-    public CarrinhoResponse removerItemDoCarrinho(@AuthenticationPrincipal Jwt principal,
-                                          @RequestParam UUID itemId,
+    public CarrinhoResponse removerItemDoCarrinho(@RequestHeader("Authorization") String token,
+                                          @RequestParam String itemId,
                                           @RequestParam int quantidade) {
-        UUID usuarioId = UUID.fromString(principal.getSubject());
-        return carrinhoService.removerItemDoCarrinho(usuarioId, itemId, quantidade);
+        var tokenReplace = token.replace("Bearer ", "");
+        String id = tokenService.validateToken(tokenReplace);
+        return carrinhoService.removerItemDoCarrinho(id, itemId, quantidade);
     }
 }

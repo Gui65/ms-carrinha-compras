@@ -11,8 +11,8 @@ import java.util.UUID;
 @Getter
 @Setter
 public class ItemCarrinho {
-    private UUID itemId;
-    private int quantidade;
-    private BigDecimal preco;
+    private String itemId;
+    private Integer quantidade;
+    private Double preco;
     private String nome;
 }

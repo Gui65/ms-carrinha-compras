@@ -10,7 +10,7 @@ public class UsuarioClientMock implements UsuarioClient {
 
     @Override
     public UsuarioDTO findByLogin(String login) {
-        if(login.equals("ADMIN")) {
+        if(login.equals("gui@matos.com")) {
             return new UsuarioDTO(
                     "1",
                     login,

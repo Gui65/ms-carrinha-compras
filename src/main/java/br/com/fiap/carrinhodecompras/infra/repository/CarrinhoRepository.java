@@ -8,5 +8,5 @@ import java.util.UUID;
 
 @Repository
 public interface CarrinhoRepository extends MongoRepository<Carrinho, UUID> {
-    Carrinho findByUsuarioId(UUID usuarioId);
+    Carrinho findByUsuarioId(String usuarioId);
 }
