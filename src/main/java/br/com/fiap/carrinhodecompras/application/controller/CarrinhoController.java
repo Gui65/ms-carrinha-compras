@@ -1,15 +1,11 @@
 package br.com.fiap.carrinhodecompras.application.controller;
 
+import br.com.fiap.carrinhodecompras.application.controller.request.AtualizarCarrinhoDTO;
 import br.com.fiap.carrinhodecompras.application.controller.response.CarrinhoResponse;
-import br.com.fiap.carrinhodecompras.domain.entity.Carrinho;
 import br.com.fiap.carrinhodecompras.domain.security.TokenService;
 import br.com.fiap.carrinhodecompras.domain.service.CarrinhoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/carrinho")
@@ -44,5 +40,13 @@ public class CarrinhoController {
         var tokenReplace = token.replace("Bearer ", "");
         String id = tokenService.validateToken(tokenReplace);
         return carrinhoService.removerItemDoCarrinho(id, itemId, quantidade);
+    }
+
+    @PutMapping("/atualizar")
+    public CarrinhoResponse atualizarCarrinho(@RequestHeader("Authorization") String token,
+                                              @RequestBody AtualizarCarrinhoDTO atualizarCarrinhoDTO) {
+        var tokenReplace = token.replace("Bearer ", "");
+        String id = tokenService.validateToken(tokenReplace);
+        return carrinhoService.atualizarCarrinho(id, atualizarCarrinhoDTO);
     }
 }

@@ -1,9 +1,11 @@
 package br.com.fiap.carrinhodecompras.domain.service;
 
+import br.com.fiap.carrinhodecompras.application.controller.request.AtualizarCarrinhoDTO;
 import br.com.fiap.carrinhodecompras.application.controller.response.CarrinhoResponse;
 import br.com.fiap.carrinhodecompras.application.controller.response.ItemCarrinhoResponse;
 import br.com.fiap.carrinhodecompras.domain.entity.Carrinho;
 import br.com.fiap.carrinhodecompras.domain.entity.ItemCarrinho;
+import br.com.fiap.carrinhodecompras.domain.enums.StatusEnum;
 import br.com.fiap.carrinhodecompras.exceptions.NaoEncontradoException;
 import br.com.fiap.carrinhodecompras.infra.client.ItemServiceClient;
 import br.com.fiap.carrinhodecompras.infra.client.dto.ItemDTO;
@@ -23,7 +25,7 @@ public class CarrinhoService {
     private ItemServiceClient itemServiceClient;
 
     public CarrinhoResponse obterCarrinhoPorUsuarioId(String usuarioId) {
-        Carrinho carrinho = carrinhoRepository.findByUsuarioId(usuarioId);
+        Carrinho carrinho = carrinhoRepository.findByUsuarioIdAndStatus(usuarioId, StatusEnum.AGUARDANDO_PAGAMENTO);
         if (carrinho == null) {
             throw new NaoEncontradoException(
                     String.format("Carrinho Vazio para o usuário '%s'", usuarioId));
@@ -100,11 +102,23 @@ public class CarrinhoService {
         return toCarrinhoResponse(carrinho);
     }
 
+    public CarrinhoResponse atualizarCarrinho(String usuarioId, AtualizarCarrinhoDTO atualizarCarrinhoDTO) {
+        Carrinho carrinho = carrinhoRepository.findByUsuarioIdAndStatus(usuarioId, StatusEnum.AGUARDANDO_PAGAMENTO);
+        if (carrinho == null) {
+            throw new NaoEncontradoException(
+                    String.format("Carrinho Vazio para o usuário '%s'", usuarioId));
+        }
+        carrinho.setStatus(atualizarCarrinhoDTO.status());
+        carrinho.setFormaPagamento(atualizarCarrinhoDTO.formaPagamento());
+        return toCarrinhoResponse(carrinhoRepository.save(carrinho));
+    }
+
     private Carrinho obterOuCriarCarrinho(String usuarioId) {
-        Carrinho carrinho = carrinhoRepository.findByUsuarioId(usuarioId);
+        Carrinho carrinho = carrinhoRepository.findByUsuarioIdAndStatus(usuarioId, StatusEnum.AGUARDANDO_PAGAMENTO);
         if (carrinho == null) {
             carrinho = new Carrinho();
             carrinho.setUsuarioId(usuarioId);
+            carrinho.setStatus(StatusEnum.AGUARDANDO_PAGAMENTO);
             carrinhoRepository.save(carrinho);
         }
         return carrinho;
