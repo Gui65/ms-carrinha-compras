@@ -1,4 +1,4 @@
-package org.com.adjt.gestaoitens.domain.enums;
+package br.com.fiap.carrinhodecompras.domain.enums;
 
 import lombok.Getter;
 
